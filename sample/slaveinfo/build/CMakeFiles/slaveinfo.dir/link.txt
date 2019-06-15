@@ -1,0 +1,1 @@
+/usr/bin/cc     CMakeFiles/slaveinfo.dir/slaveinfo.c.o  -o slaveinfo -lsoem -pthread 

@@ -1,0 +1,165 @@
+/**
+  ******************************************************************************
+  * @file    soem_linuxcnc.comp
+  * @author  hiep.lchan@gmail.com
+  * @date    3-January-2017
+  * @brief   Embedded EtherCAT SOEM to LinuxCNC project.
+  *          This is a source file to create soem_linuxcnc
+  *          LinuxCNC HAL userspace component.
+	*/
+component soem_linuxcnc "EtherCAT comunication from angle positions, velocities, torque";
+option userspace;
+option extra_link_args "-lsoem_linuxcnc -lsoem -lpthread";
+
+pin in float set_joint_pos1;
+pin in float set_joint_pos2;
+pin in float set_joint_pos3;
+pin in float set_joint_pos4;
+pin in float set_joint_pos5;
+pin in float set_joint_pos6;
+pin in float set_joint_pos7;
+
+pin in float set_joint_vel1;
+pin in float set_joint_vel2;
+pin in float set_joint_vel3;
+pin in float set_joint_vel4;
+pin in float set_joint_vel5;
+pin in float set_joint_vel6;
+pin in float set_joint_vel7;
+
+pin in float set_joint_torque1;
+pin in float set_joint_torque2;
+pin in float set_joint_torque3;
+pin in float set_joint_torque4;
+pin in float set_joint_torque5;
+pin in float set_joint_torque6;
+pin in float set_joint_torque7;
+
+pin in bit led1;
+pin in bit led2;
+
+
+pin out float actual_joint_pos1;
+pin out float actual_joint_pos2;
+pin out float actual_joint_pos3;
+pin out float actual_joint_pos4;
+pin out float actual_joint_pos5;
+pin out float actual_joint_pos6;
+pin out float actual_joint_pos7;
+
+pin out float actual_joint_vel1;
+pin out float actual_joint_vel2;
+pin out float actual_joint_vel3;
+pin out float actual_joint_vel4;
+pin out float actual_joint_vel5;
+pin out float actual_joint_vel6;
+pin out float actual_joint_vel7;
+
+pin out float actual_joint_torque1;
+pin out float actual_joint_torque2;
+pin out float actual_joint_torque3;
+pin out float actual_joint_torque4;
+pin out float actual_joint_torque5;
+pin out float actual_joint_torque6;
+pin out float actual_joint_torque7;
+
+pin out bit btn1;
+pin out bit sw1;
+pin out bit sw2;
+
+
+pin out float time_exe;
+
+license "GPL";
+;;
+
+#include <sys/time.h>
+#include <soem_linuxcnc.h>
+#include <pthread.h>
+
+void user_mainloop(void)
+{
+  struct Ethercat_actual_value actual_value;
+  struct Ethercat_set_value set_value;
+
+  init_ethercat("enp4s0f2");
+
+  clock_t last_time;
+
+  set_value.LED = 1;
+  for (int i = 0; i < 7; i++)
+  {
+    set_value.set_position[i] = (int16) 10.5;
+    set_value.set_velocity[i] = (int16) 10.5;
+    set_value.set_torque[i] = (int16) 10.5;
+  }
+
+  actual_value = ethecat_process_data(set_value);
+
+  while(1)
+  {
+    FOR_ALL_INSTS()
+    {
+      set_value.LED = (uint8)(led1<<1) + (uint8)led2;
+
+      set_value.set_position[0] = (int16) set_joint_pos1;
+      set_value.set_position[1] = (int16) set_joint_pos2;
+      set_value.set_position[2] = (int16) set_joint_pos3;
+      set_value.set_position[3] = (int16) set_joint_pos4;
+      set_value.set_position[4] = (int16) set_joint_pos5;
+      set_value.set_position[5] = (int16) set_joint_pos6;
+      set_value.set_position[6] = (int16) set_joint_pos7;
+
+      set_value.set_velocity[0] = (int16) set_joint_vel1;
+      set_value.set_velocity[1] = (int16) set_joint_vel2;
+      set_value.set_velocity[2] = (int16) set_joint_vel3;
+      set_value.set_velocity[3] = (int16) set_joint_vel4;
+      set_value.set_velocity[4] = (int16) set_joint_vel5;
+      set_value.set_velocity[5] = (int16) set_joint_vel6;
+      set_value.set_velocity[6] = (int16) set_joint_vel7;
+
+      set_value.set_torque[0] = (int16) set_joint_torque1;
+      set_value.set_torque[1] = (int16) set_joint_torque2;
+      set_value.set_torque[2] = (int16) set_joint_torque3;
+      set_value.set_torque[3] = (int16) set_joint_torque4;
+      set_value.set_torque[4] = (int16) set_joint_torque5;
+      set_value.set_torque[5] = (int16) set_joint_torque6;
+      set_value.set_torque[6] = (int16) set_joint_torque7;
+
+      actual_value = ethecat_process_data(set_value);
+
+      btn1 = !(boolean)(actual_value.button & 0x01);
+      sw1 = !(boolean)(actual_value.button & 0x02);
+      sw2 = !(boolean)(actual_value.button & 0x04);
+
+      actual_joint_pos1 = (float) actual_value.actual_position[0];
+      actual_joint_pos2 = (float) actual_value.actual_position[1];
+      actual_joint_pos3 = (float) actual_value.actual_position[2];
+      actual_joint_pos4 = (float) actual_value.actual_position[3];
+      actual_joint_pos5 = (float) actual_value.actual_position[4];
+      actual_joint_pos6 = (float) actual_value.actual_position[5];
+      actual_joint_pos7 = (float) actual_value.actual_position[6];
+
+
+      actual_joint_vel1 = (float) actual_value.actual_velocity[0];
+      actual_joint_vel2 = (float) actual_value.actual_velocity[1];
+      actual_joint_vel3 = (float) actual_value.actual_velocity[2];
+      actual_joint_vel4 = (float) actual_value.actual_velocity[3];
+      actual_joint_vel5 = (float) actual_value.actual_velocity[4];
+      actual_joint_vel6 = (float) actual_value.actual_velocity[5];
+      actual_joint_vel7 = (float) actual_value.actual_velocity[6];
+
+
+      actual_joint_torque1 = (float) actual_value.actual_torque[0];
+      actual_joint_torque2 = (float) actual_value.actual_torque[1];
+      actual_joint_torque3 = (float) actual_value.actual_torque[2];
+      actual_joint_torque4 = (float) actual_value.actual_torque[3];
+      actual_joint_torque5 = (float) actual_value.actual_torque[4];
+      actual_joint_torque6 = (float) actual_value.actual_torque[5];
+      actual_joint_torque7 = (float) actual_value.actual_torque[6];
+
+      time_exe = (clock() - last_time) / 1.0;
+      last_time = clock();
+    }
+  }
+}

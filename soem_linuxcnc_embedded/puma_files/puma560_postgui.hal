@@ -1,0 +1,37 @@
+net m1 inverse-dynamics.0.joint-mm1 pyvcp.moment0
+net m2 inverse-dynamics.0.joint-mm2 pyvcp.moment1
+net m3 inverse-dynamics.0.joint-mm3 pyvcp.moment2
+net m4 inverse-dynamics.0.joint-mm4 pyvcp.moment3
+net m5 inverse-dynamics.0.joint-mm5 pyvcp.moment4
+net m6 inverse-dynamics.0.joint-mm6 pyvcp.moment5
+
+net t1 inverse-dynamics.0.time-exe pyvcp.id_time
+net t2 soem-linuxcnc.0.time-exe pyvcp.soem_time
+
+net led1 soem-linuxcnc.0.led1 pyvcp.LED1
+net led2 soem-linuxcnc.0.led2 pyvcp.LED2
+
+net btn1 soem-linuxcnc.0.btn1 pyvcp.btn1
+net sw1 soem-linuxcnc.0.sw1 pyvcp.sw1
+net sw2 soem-linuxcnc.0.sw2 pyvcp.sw2
+
+net J0scaled pyvcp.angle0
+net J1scaled pyvcp.angle1
+net J2scaled pyvcp.angle2
+net J3scaled pyvcp.angle3
+net J4scaled pyvcp.angle4
+net J5scaled pyvcp.angle5
+
+net J0velscaled pyvcp.vel0
+net J1velscaled pyvcp.vel1
+net J2velscaled pyvcp.vel2
+net J3velscaled pyvcp.vel3
+net J4velscaled pyvcp.vel4
+net J5velscaled pyvcp.vel5
+
+net J0accscaled pyvcp.acc0
+net J1accscaled pyvcp.acc1
+net J2accscaled pyvcp.acc2
+net J3accscaled pyvcp.acc3
+net J4accscaled pyvcp.acc4
+net J5accscaled pyvcp.acc5
